@@ -17,9 +17,9 @@ type Runnable interface {
 func logErrorAndExit(err error, context string, a ...interface{}) {
 	if err != nil {
 		if context == "" {
-			fmt.Printf("%w\n", err)
+			fmt.Printf("%s\n", err)
 		} else {
-			fmt.Printf("%s %w", strings.Title(context), err)
+			fmt.Printf("%s %s", strings.Title(context), err)
 		}
 		os.Exit(1)
 	}

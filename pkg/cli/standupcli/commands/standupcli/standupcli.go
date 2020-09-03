@@ -2,6 +2,7 @@ package standupcli
 
 import (
 	"github.com/mohammedzee1000/standup/pkg/cli/standupcli/commands/common"
+	"github.com/mohammedzee1000/standup/pkg/cli/standupcli/commands/config"
 	"github.com/mohammedzee1000/standup/pkg/cli/standupcli/commands/report"
 	"github.com/mohammedzee1000/standup/pkg/cli/standupcli/commands/task"
 	"github.com/spf13/cobra"
@@ -20,6 +21,7 @@ func rootStandupCommand(name, fullname string) *cobra.Command {
 	rootCmd.AddCommand(
 		task.NewCmdTask(task.RecommendedCommandNameTask, common.GetFullName(fullname, task.RecommendedCommandNameTask)),
 		report.NewCmdReport(report.RecommendedCommandNameReport, common.GetFullName(fullname, report.RecommendedCommandNameReport)),
+		config.NewCmdConfig(config.RecommendedCommandNameConfig, common.GetFullName(fullname, config.RecommendedCommandNameConfig)),
 	)
 
 	return rootCmd

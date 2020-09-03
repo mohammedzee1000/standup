@@ -43,9 +43,9 @@ func ReadConfig() (*Config, error) {
 		return nil, fmt.Errorf("unable to read yaml file %w", err)
 	}
 	if !e {
-		c.DefaultSection = "Tasks"
+		c.DefaultSection = "Worked On"
 		c.SectionNames = make(map[string]string)
-		c.SectionNames["Tasks"] = "Normal tasks done for the day"
+		c.SectionNames["Worked On"] = "What tasks were worked on for the day"
 		c.SectionNames["Blockers"] = "Blockers for completing tasks that are affecting completion"
 		c.SectionNames["At Risk"] = "Possible non-completion due to various reasons"
 		c.SectionNames["PR Reviews"] = "All pull request reviews"

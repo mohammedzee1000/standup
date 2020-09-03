@@ -85,6 +85,31 @@ func (c *Context) GetStartOfWeekDay() (wkday time.Weekday, err error) {
 	return wkday, nil
 }
 
+func (c *Context) SetStartOfWeekDay(val string) error {
+	c.configuration.StartOfWeekDay = val
+	return c.configuration.WriteConfig()
+}
+
 func (c *Context) GetHolidays() []string {
 	return c.configuration.Holidays
+}
+
+func (c *Context) SetHolidays(val []string) error {
+	c.configuration.Holidays = val
+	return c.configuration.WriteConfig()
+}
+
+func (c *Context) GetSections() map[string]string {
+	var sn map[string]string
+	sn = c.configuration.SectionNames
+	return sn
+}
+
+func (c *Context) GetDefaultSection() string {
+	return c.configuration.DefaultSection
+}
+
+func (c *Context) SetDefaultSection(val string) error {
+	c.configuration.DefaultSection = val
+	return c.configuration.WriteConfig()
 }

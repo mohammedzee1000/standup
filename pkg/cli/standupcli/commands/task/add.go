@@ -2,7 +2,6 @@ package task
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/mohammedzee1000/standup/pkg/cli/standupcli/commands/common"
 	"github.com/mohammedzee1000/standup/pkg/standup/standup"
@@ -13,15 +12,14 @@ import (
 const RecommendedCommandNameAdd = "add"
 
 type TaskAddOptions struct {
-	*common.CommonOptions
-	dt          time.Time
+	*common.DatedOptions
 	section     string
 	description string
 }
 
 func newTaskAddOptions() *TaskAddOptions {
 	return &TaskAddOptions{
-		CommonOptions: common.NewCommonOptions(),
+		DatedOptions: common.NewDatedOptions(),
 	}
 }
 
@@ -30,8 +28,10 @@ func (tao *TaskAddOptions) Complete(name string, cmd *cobra.Command, args []stri
 	if err != nil {
 		return err
 	}
-	tao.dt = time.Now()
-	return nil
+	if tao.section == "" {
+		tao.section = tao.Context.GetDefaultSection()
+	}
+	return tao.CompleteDate()
 }
 
 func (tao *TaskAddOptions) Validate() error {
@@ -45,7 +45,7 @@ func (tao *TaskAddOptions) Validate() error {
 }
 
 func (tao *TaskAddOptions) Run() error {
-	stc := standup.NewStandUpConfig(tao.dt)
+	stc := standup.NewStandUpConfig(tao.GetDate())
 	err := stc.FromFile(tao.Context)
 	if err != nil {
 		return err
@@ -74,7 +74,8 @@ func NewTaskAddCommand(name string, fullname string) *cobra.Command {
 			common.GenericRun(o, cmd, args)
 		},
 	}
-	taskAddCommand.Flags().StringVarP(&o.section, "section", "s", "Tasks", "section name")
+	taskAddCommand.Flags().StringVarP(&o.section, "section", "s", "", "section name")
 	taskAddCommand.Flags().StringVarP(&o.description, "description", "d", "", "description of task")
+	o.AddDateFlags(taskAddCommand)
 	return taskAddCommand
 }
