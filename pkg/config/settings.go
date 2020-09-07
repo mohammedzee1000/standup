@@ -7,9 +7,9 @@ import (
 )
 
 const (
-	configFile = "mytask_config.yaml"
-	dataDir    = ".mytask"
-	dataDirEnv = "MYTASK_DATA_DIR"
+	configFile = "config.yaml"
+	dataDir    = ".standup"
+	dataDirEnv = "STANDUP_DIR"
 )
 
 func getConfigFilePath() (string, error) {
