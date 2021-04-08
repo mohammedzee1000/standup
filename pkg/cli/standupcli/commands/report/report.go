@@ -15,6 +15,7 @@ const RecommendedCommandNameReport = "report"
 type ReportOptions struct {
 	*common.DatedOptions
 	week bool
+	wide bool
 }
 
 func newReportOptions() *ReportOptions {
@@ -93,7 +94,11 @@ func (ro *ReportOptions) printStandUp(dt time.Time) error {
 			}
 
 			for _, t := range ts {
-				fmt.Printf("  - %s\n", t.Description)
+				ids := ""
+				if ro.wide {
+					ids = fmt.Sprintf("[%s] ", t.ID)
+				}
+				fmt.Printf("  - %s%s\n", ids, t.Description)
 			}
 			fmt.Println("")
 		}
@@ -131,5 +136,6 @@ func NewCmdReport(name, fullname string) *cobra.Command {
 	}
 	o.AddDateFlags(reportCommand)
 	reportCommand.Flags().BoolVarP(&o.week, "week", "w", false, "use to get week report")
+	reportCommand.Flags().BoolVar(&o.wide, "wide", false, "show wide/full standup")
 	return reportCommand
 }

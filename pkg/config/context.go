@@ -113,3 +113,25 @@ func (c *Context) SetDefaultSection(val string) error {
 	c.configuration.DefaultSection = val
 	return c.configuration.WriteConfig()
 }
+
+func (c *Context) UpdateSectionDescription(name string, description string) error {
+	c.configuration.SectionNames[name] = description
+	return c.configuration.WriteConfig()
+}
+
+func (c *Context) DeleteSection(name string) error {
+	if c.SectionExists(name) {
+		if len(c.configuration.SectionNames) > 1 {
+			delete(c.configuration.SectionNames, name)
+			if c.configuration.DefaultSection == name {
+				for k, _ := range c.configuration.SectionNames {
+					c.configuration.DefaultSection = k
+					break
+				}
+			}
+		} else {
+			return fmt.Errorf("cannot delete last section in list")
+		}
+	}
+	return c.configuration.WriteConfig()
+}

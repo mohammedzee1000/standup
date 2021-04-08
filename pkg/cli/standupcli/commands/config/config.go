@@ -11,6 +11,7 @@ func NewCmdConfig(name string, fullname string) *cobra.Command {
 	var configCmd *cobra.Command
 	view := NewCmdConfigView(RecommendedCommandNameGet, common.GetFullName(fullname, RecommendedCommandNameGet))
 	set := NewCmdConfigSet(RecommendedCommandNameSet, common.GetFullName(fullname, RecommendedCommandNameSet))
+	us := NewCmdConfigUpdateSection(RecommendedCommandNameUpdateSection, common.GetFullName(fullname, RecommendedCommandNameUpdateSection))
 
 	configCmd = &cobra.Command{
 		Use:   name,
@@ -20,6 +21,7 @@ func NewCmdConfig(name string, fullname string) *cobra.Command {
 	configCmd.AddCommand(
 		view,
 		set,
+		us,
 	)
 	return configCmd
 }
