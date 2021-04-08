@@ -49,12 +49,9 @@ func (ro *ReportOptions) printWeekStandUp() error {
 		t := dt.AddDate(0, 0, -1)
 		dt = t
 	}
-	for dt.Weekday() != firstDayWeek-1 {
+	for i := 0 ; i < 7 ; i++ {
+		fmt.Printf("working on date %s, whose weekday is %s\n", dt, dt.Weekday())
 		var isHoliday bool
-		if dt.Weekday() == ro.GetDate().AddDate(0, 0, 1).Weekday() {
-			fmt.Printf("----week still in progress/exceeded today----\n")
-			break
-		}
 
 		for _, h := range ro.Context.GetHolidays() {
 			if dt.Weekday().String() == h {
@@ -67,6 +64,11 @@ func (ro *ReportOptions) printWeekStandUp() error {
 			ro.printStandUp(dt)
 		}
 		fmt.Println("")
+
+		if dt.After(time.Now()) {
+			fmt.Printf("----week still in progress/exceeded today----\n")
+			break
+		}
 		dt = dt.AddDate(0, 0, 1)
 	}
 	return nil
