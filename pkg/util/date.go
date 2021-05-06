@@ -29,7 +29,7 @@ func StringToMonth(value string) (mnt time.Month, err error) {
 	mntmap[time.February.String()] = time.February
 	mntmap[time.March.String()] = time.March
 	mntmap[time.April.String()] = time.April
-	mntmap[time.May.String()] = time.April
+	mntmap[time.May.String()] = time.May
 	mntmap[time.June.String()] = time.June
 	mntmap[time.July.String()] = time.July
 	mntmap[time.August.String()] = time.August
