@@ -32,14 +32,11 @@ type DatedOptions struct {
 	month string
 	year  int
 	dt    *time.Time
-	tnow  *time.Time
 }
 
 func NewDatedOptions() *DatedOptions {
-	t := time.Now()
 	return &DatedOptions{
 		CommonOptions: NewCommonOptions(),
-		tnow:          &t,
 	}
 }
 
@@ -48,9 +45,9 @@ func (do *DatedOptions) GetDate() time.Time {
 }
 
 func (do *DatedOptions) AddDateFlags(cmd *cobra.Command) {
-	cmd.Flags().IntVarP(&do.day, "day", "", do.tnow.Day(), "Day of the month")
-	cmd.Flags().StringVarP(&do.month, "month", "", do.tnow.Month().String(), "Name of Month")
-	cmd.Flags().IntVarP(&do.year, "year", "", do.tnow.Year(), "year")
+	cmd.Flags().IntVarP(&do.day, "day", "", time.Now().Day(), "Day of the month")
+	cmd.Flags().StringVarP(&do.month, "month", "", time.Now().Month().String(), "Name of Month")
+	cmd.Flags().IntVarP(&do.year, "year", "", time.Now().Year(), "year")
 }
 
 func (do *DatedOptions) CompleteDate() error {
@@ -58,8 +55,8 @@ func (do *DatedOptions) CompleteDate() error {
 	if err != nil {
 		return err
 	}
-	dt := time.Date(do.year, m, do.day, do.tnow.Hour(), do.tnow.Minute(), do.tnow.Second(), do.tnow.Nanosecond(), do.tnow.Location())
-	if do.tnow.Before(dt) {
+	dt := time.Date(do.year, m, do.day, time.Now().Hour(), time.Now().Minute(), time.Now().Second(), time.Now().Nanosecond(), time.Now().Location())
+	if time.Now().Before(dt) {
 		return fmt.Errorf("cannot manipulate after today")
 	}
 	do.dt = &dt
