@@ -8,20 +8,21 @@ import (
 	"github.com/pkg/errors"
 )
 
-//Config repersents the app config
+// Config repersents the app config
 type Config struct {
+	Name           string            `json:"Name"`
 	SectionNames   map[string]string `json:"SectionNames,omitempty"`
 	DefaultSection string            `json:"DefaultSection"`
 	StartOfWeekDay string            `json:"StartOfWeekDay"`
 	Holidays       []string          `json:"Holidays"`
 }
 
-//new creates a new Config struct
+// new creates a new Config struct
 func new() *Config {
 	return &Config{}
 }
 
-//WriteConfig writes config to a file
+// WriteConfig writes config to a file
 func (c *Config) WriteConfig() error {
 	cfp, err := getConfigFilePath()
 	if err != nil {
@@ -30,7 +31,7 @@ func (c *Config) WriteConfig() error {
 	return system.WriteYamlFile(cfp, &c)
 }
 
-//ReadConfig reads configuration from file
+// ReadConfig reads configuration from file
 func ReadConfig() (*Config, error) {
 	var c *Config
 	c = new()
@@ -43,6 +44,7 @@ func ReadConfig() (*Config, error) {
 		return nil, fmt.Errorf("unable to read yaml file %w", err)
 	}
 	if !e {
+		c.Name = "John Doe"
 		c.DefaultSection = "Worked On"
 		c.SectionNames = make(map[string]string)
 		c.SectionNames["Worked On"] = "What tasks were worked on for the day"
@@ -50,7 +52,7 @@ func ReadConfig() (*Config, error) {
 		c.SectionNames["At Risk"] = "Possible non-completion due to various reasons"
 		c.SectionNames["PR Reviews"] = "All pull request reviews"
 		c.StartOfWeekDay = time.Monday.String()
-		c.Holidays = []string{"Saturday", "Sunday"}
+		c.Holidays = []string{time.Saturday.String(), time.Sunday.String()}
 		err = c.WriteConfig()
 		if err != nil {
 			return c, err

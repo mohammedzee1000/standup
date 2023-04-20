@@ -7,13 +7,13 @@ import (
 	"time"
 )
 
-//Context repersents the run context
+// Context repersents the run context
 type Context struct {
 	configuration *Config
 	dataDir       string
 }
 
-//New returns a context
+// New returns a context
 func New() (*Context, error) {
 	dd, err := getDataDir()
 	if err != nil {
@@ -27,12 +27,12 @@ func New() (*Context, error) {
 	return c, nil
 }
 
-//DataDir gets the data dir
+// DataDir gets the data dir
 func (c *Context) DataDir() string {
 	return c.dataDir
 }
 
-//GetStandUpFilePath returns path to use for standup record file based on day, month and year
+// GetStandUpFileDir returns path to use for standup record file based on day, month and year
 func (c *Context) GetStandUpFileDir() (string, error) {
 	sfd := filepath.Join(c.dataDir, "standups")
 	_, err := os.Stat(sfd)
@@ -49,7 +49,7 @@ func (c *Context) GetStandUpFileDir() (string, error) {
 	return sfd, nil
 }
 
-//SectionExists checks if specified section exists
+// SectionExists checks if specified section exists
 func (c *Context) SectionExists(sectioName string) bool {
 	for s, _ := range c.configuration.SectionNames {
 		if s == sectioName {
@@ -111,6 +111,19 @@ func (c *Context) GetDefaultSection() string {
 
 func (c *Context) SetDefaultSection(val string) error {
 	c.configuration.DefaultSection = val
+	return c.configuration.WriteConfig()
+}
+
+func (c *Context) GetName() string {
+	n := c.configuration.Name
+	if n == "" {
+		n = "UNKNOWN"
+	}
+	return n
+}
+
+func (c *Context) SetName(name string) error {
+	c.configuration.Name = name
 	return c.configuration.WriteConfig()
 }
 

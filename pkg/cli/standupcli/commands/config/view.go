@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 	"os"
-	"strings"
 	"text/tabwriter"
 
 	"github.com/mohammedzee1000/standup/pkg/cli/standupcli/commands/common"
@@ -39,10 +38,13 @@ func (goo *ViewOptions) Run() error {
 	holi := goo.Context.GetHolidays()
 	sec := goo.Context.GetSections()
 	dsec := goo.Context.GetDefaultSection()
+	nm := goo.Context.GetName()
 
 	//out
 	w := tabwriter.NewWriter(os.Stdout, 1, 4, 2, ' ', tabwriter.TabIndent)
-	fmt.Fprintln(w, strings.Title("Configuration Parameters: \n"))
+
+	fmt.Fprintln(w, "Configuration Parameters:\n ")
+	fmt.Fprintln(w, fmt.Sprintf("Name: %s", nm))
 	fmt.Fprintln(w, "Sections:")
 	for sn, sval := range sec {
 		fmt.Fprintf(w, "\t%s: %s\n", sn, sval)

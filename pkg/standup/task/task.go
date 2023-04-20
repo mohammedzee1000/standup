@@ -1,10 +1,14 @@
 package task
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+	"time"
+)
 
 type Task struct {
-	ID          string `json:"ID"`
-	Description string `json:"Description"`
+	ID          string    `json:"ID"`
+	Description string    `json:"Description"`
+	When        time.Time `json:"When"`
 }
 
 func NewEmptyTask() *Task {

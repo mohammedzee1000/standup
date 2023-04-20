@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-
 	"github.com/mohammedzee1000/standup/pkg/cli/standupcli/commands/common"
 	"github.com/mohammedzee1000/standup/pkg/util"
 	"github.com/spf13/cobra"
@@ -15,6 +14,7 @@ type SetOptions struct {
 	defaultSection string
 	holidays       []string
 	startOfWeek    string
+	name           string
 }
 
 func newSetOptions() *SetOptions {
@@ -71,7 +71,13 @@ func (so *SetOptions) Run() (err error) {
 			return err
 		}
 	}
-	fmt.Println("Updated")
+	if so.name != "" {
+		err = so.Context.SetName(so.name)
+		if err != nil {
+			return err
+		}
+	}
+	fmt.Println("Updated configuration")
 	return nil
 }
 
@@ -88,5 +94,6 @@ func NewCmdConfigSet(name, fullname string) *cobra.Command {
 	}
 	configSetCmd.Flags().StringVarP(&o.defaultSection, "defaultsection", "d", "", "use to set default section")
 	configSetCmd.Flags().StringVarP(&o.startOfWeek, "startofweekday", "w", "", "use to update start of week")
+	configSetCmd.Flags().StringVarP(&o.name, "name", "n", "", "name of the owner of this standup")
 	return configSetCmd
 }
