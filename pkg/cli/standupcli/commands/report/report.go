@@ -2,7 +2,6 @@ package report
 
 import (
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/mohammedzee1000/standup/pkg/cli/standupcli/commands/common"
@@ -49,7 +48,8 @@ func (ro *ReportOptions) printWeekStandUp() error {
 		t := dt.AddDate(0, 0, -1)
 		dt = t
 	}
-	for i := 0 ; i < 7 ; i++ {
+	fmt.Printf("Name: %s\n", ro.Context.GetName())
+	for i := 0; i < 7; i++ {
 		fmt.Printf("working on date %s, whose weekday is %s\n", dt, dt.Weekday())
 		var isHoliday bool
 
@@ -61,7 +61,7 @@ func (ro *ReportOptions) printWeekStandUp() error {
 			}
 		}
 		if !isHoliday {
-			ro.printStandUp(dt)
+			ro.printStandUp(dt, true)
 		}
 		fmt.Println("")
 
@@ -74,7 +74,7 @@ func (ro *ReportOptions) printWeekStandUp() error {
 	return nil
 }
 
-func (ro *ReportOptions) printStandUp(dt time.Time) error {
+func (ro *ReportOptions) printStandUp(dt time.Time, printName bool) error {
 	stc := standup.NewStandUpConfig(dt)
 	e, err := stc.ConfigFileExists(ro.Context)
 	if err != nil {
@@ -88,8 +88,11 @@ func (ro *ReportOptions) printStandUp(dt time.Time) error {
 		stup := stc.GetStandUp()
 		tz, _ := dt.Zone()
 		fmt.Printf("Standup for Date %d %s %d %s %s: \n\n", dt.Day(), dt.Month(), dt.Year(), dt.Weekday(), tz)
+		if printName {
+			fmt.Printf("Name: %s\n", ro.Context.GetName())
+		}
 		for s, ts := range stup.Sections {
-			fmt.Printf("%s:\n", strings.Title(s))
+			fmt.Printf("%s:\n", s)
 			desc := ro.Context.GetSectionDescription(s)
 			if desc != "" {
 				fmt.Printf("Description: %s\n", desc)
@@ -119,7 +122,7 @@ func (ro *ReportOptions) Run() error {
 		return errx
 	} else {
 		fmt.Printf("----Day Report----\n\n")
-		errx := ro.printStandUp(ro.GetDate())
+		errx := ro.printStandUp(ro.GetDate(), true)
 		fmt.Println("----end----")
 		return errx
 	}

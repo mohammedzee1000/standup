@@ -117,7 +117,7 @@ func (c *Context) SetDefaultSection(val string) error {
 func (c *Context) GetName() string {
 	n := c.configuration.Name
 	if n == "" {
-		n = "UNKNOWN"
+		n = "UNKNOWN - PLEASE SET"
 	}
 	return n
 }

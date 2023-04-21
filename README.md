@@ -16,7 +16,7 @@ First have golang which supports go mod
 ```
 ❯ standup config view
 Configuration Parameters: 
-
+Name: John Doe
 Sections:
 	At Risk: Possible non-completion due to various reasons
 	Blockers: Blockers for completing tasks that are affecting completion
