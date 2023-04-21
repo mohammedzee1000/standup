@@ -5,6 +5,7 @@ import (
 	"github.com/mohammedzee1000/standup/pkg/cli/standupcli/commands/common"
 	"github.com/mohammedzee1000/standup/pkg/util"
 	"github.com/spf13/cobra"
+	"time"
 )
 
 const RecommendedCommandNameSet = "set"
@@ -95,5 +96,6 @@ func NewCmdConfigSet(name, fullname string) *cobra.Command {
 	configSetCmd.Flags().StringVarP(&o.defaultSection, "defaultsection", "d", "", "use to set default section")
 	configSetCmd.Flags().StringVarP(&o.startOfWeek, "startofweekday", "w", "", "use to update start of week")
 	configSetCmd.Flags().StringVarP(&o.name, "name", "n", "", "name of the owner of this standup")
+	configSetCmd.Flags().StringArrayVarP(&o.holidays, "holidays", "h", []string{time.Saturday.String(), time.Sunday.String()}, "List of regular weekly holidays, defaults to Saturday and Sunday")
 	return configSetCmd
 }
