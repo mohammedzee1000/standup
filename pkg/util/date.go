@@ -43,3 +43,16 @@ func StringToMonth(value string) (mnt time.Month, err error) {
 	}
 	return mnt, nil
 }
+
+func GetDatesofWeek(firstDayWeek time.Weekday, refDate time.Time) [7]time.Time {
+	dtl := [7]time.Time{}
+	dt := refDate
+	for dt.Weekday() != firstDayWeek {
+		t := dt.AddDate(0, 0, -1)
+		dt = t
+	}
+	for i := 0; i < 7; i++ {
+		dtl[i] = dt.AddDate(0, 0, i)
+	}
+	return dtl
+}

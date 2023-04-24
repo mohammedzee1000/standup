@@ -9,8 +9,9 @@ import (
 type Section []*task.Task
 
 type StandUp struct {
-	Date     time.Time          `json:"Date"`
-	Sections map[string]Section `json:"Sections"`
+	Date      time.Time          `json:"Date"`
+	Sections  map[string]Section `json:"Sections"`
+	IsHoliday bool               `json:"IsHoliday"`
 }
 
 func NewEmptyStandUp() *StandUp {

@@ -60,5 +60,16 @@ func (do *DatedOptions) CompleteDate() error {
 		return fmt.Errorf("cannot manipulate after today")
 	}
 	do.dt = &dt
+	//firstDayOfWeek, err := do.Context.GetStartOfWeekDay()
+	//if err != nil {
+	//	return err
+	//}
+	//datesOfWeek := util.GetDatesofWeek(firstDayOfWeek)
+	//holidays := do.Context.GetHolidays()
+	//for _, dw := range datesOfWeek {
+	//	for _, h := range holidays {
+	//		standup.NewStandUpConfig(dw)
+	//	}
+	//}
 	return nil
 }
