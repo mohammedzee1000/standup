@@ -2,6 +2,7 @@ package util
 
 import (
 	"fmt"
+	"math"
 	"time"
 )
 
@@ -60,4 +61,19 @@ func GetDatesofWeek(firstDayWeek time.Weekday, refDate time.Time) [7]time.Time {
 		dtl[i] = dt.AddDate(0, 0, i)
 	}
 	return dtl
+}
+
+func RoundTime(input float64) int {
+	var result float64
+
+	if input < 0 {
+		result = math.Ceil(input - 0.5)
+	} else {
+		result = math.Floor(input + 0.5)
+	}
+
+	// only interested in integer, ignore fractional
+	i, _ := math.Modf(result)
+
+	return int(i)
 }

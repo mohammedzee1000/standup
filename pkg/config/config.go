@@ -14,6 +14,12 @@ type ConfigSection struct {
 	Description string `json:"Description"`
 }
 
+type ConfigDuration struct {
+	Days   int `json:"Days"`
+	Weeks  int `json:"Weeks"`
+	Months int `json:"Months"`
+}
+
 // Config repersents the app config
 type Config struct {
 	Name           string           `json:"Name"`
@@ -22,6 +28,7 @@ type Config struct {
 	StartOfWeekDay string           `json:"StartOfWeekDay"`
 	Holidays       []string         `json:"Holidays"`
 	SectionsPerRow int              `json:"SectionsPerRow"`
+	KeepOldUntil   *ConfigDuration  `json:"KeepOldUntil"`
 }
 
 // new creates a new Config struct
@@ -69,10 +76,19 @@ func ReadConfig() (*Config, error) {
 			Name:        "PR Reviews",
 			Short:       "prr",
 			Description: "Reviews of pull requests",
+		}, &ConfigSection{
+			Name:        "Meetings",
+			Short:       "mt",
+			Description: "Meetings attended during the day",
 		})
 		c.StartOfWeekDay = time.Monday.String()
 		c.Holidays = []string{time.Saturday.String(), time.Sunday.String()}
 		c.SectionsPerRow = 2
+		c.KeepOldUntil = &ConfigDuration{
+			Days:   0,
+			Weeks:  0,
+			Months: 1,
+		}
 		err = c.WriteConfig()
 		if err != nil {
 			return c, err
