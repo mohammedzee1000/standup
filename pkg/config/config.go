@@ -8,13 +8,20 @@ import (
 	"github.com/pkg/errors"
 )
 
+type ConfigSection struct {
+	Name        string `json:"Name"`
+	Short       string `json:"Short"`
+	Description string `json:"Description"`
+}
+
 // Config repersents the app config
 type Config struct {
-	Name           string            `json:"Name"`
-	SectionNames   map[string]string `json:"SectionNames,omitempty"`
-	DefaultSection string            `json:"DefaultSection"`
-	StartOfWeekDay string            `json:"StartOfWeekDay"`
-	Holidays       []string          `json:"Holidays"`
+	Name           string           `json:"Name"`
+	Sections       []*ConfigSection `json:"Sections,omitempty"`
+	DefaultSection string           `json:"DefaultSection"`
+	StartOfWeekDay string           `json:"StartOfWeekDay"`
+	Holidays       []string         `json:"Holidays"`
+	SectionsPerRow int              `json:"SectionsPerRow"`
 }
 
 // new creates a new Config struct
@@ -46,13 +53,26 @@ func ReadConfig() (*Config, error) {
 	if !e {
 		c.Name = "John Doe"
 		c.DefaultSection = "Worked On"
-		c.SectionNames = make(map[string]string)
-		c.SectionNames["Worked On"] = "What tasks were worked on for the day"
-		c.SectionNames["Blockers"] = "Blockers for completing tasks that are affecting completion"
-		c.SectionNames["At Risk"] = "Possible non-completion due to various reasons"
-		c.SectionNames["PR Reviews"] = "All pull request reviews"
+		c.Sections = append(c.Sections, &ConfigSection{
+			Name:        "Worked On",
+			Short:       "wo",
+			Description: "Tasks worked on for the day",
+		}, &ConfigSection{
+			Name:        "Blockers",
+			Short:       "bl",
+			Description: "Blockers affect completion of tasks",
+		}, &ConfigSection{
+			Name:        "At Risk",
+			Short:       "ar",
+			Description: "May not complete due to some issue",
+		}, &ConfigSection{
+			Name:        "PR Reviews",
+			Short:       "prr",
+			Description: "Reviews of pull requests",
+		})
 		c.StartOfWeekDay = time.Monday.String()
 		c.Holidays = []string{time.Saturday.String(), time.Sunday.String()}
+		c.SectionsPerRow = 2
 		err = c.WriteConfig()
 		if err != nil {
 			return c, err

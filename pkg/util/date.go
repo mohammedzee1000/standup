@@ -44,6 +44,11 @@ func StringToMonth(value string) (mnt time.Month, err error) {
 	return mnt, nil
 }
 
+func DateToString(dt time.Time) string {
+	tz, _ := dt.Zone()
+	return fmt.Sprintf("%d %s %d %s %s", dt.Day(), dt.Month().String(), dt.Year(), dt.Weekday().String(), tz)
+}
+
 func GetDatesofWeek(firstDayWeek time.Weekday, refDate time.Time) [7]time.Time {
 	dtl := [7]time.Time{}
 	dt := refDate

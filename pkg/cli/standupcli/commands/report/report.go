@@ -3,6 +3,8 @@ package report
 import (
 	"fmt"
 	"github.com/mohammedzee1000/standup/pkg/util"
+	"github.com/pterm/pterm"
+	"strings"
 	"time"
 
 	"github.com/mohammedzee1000/standup/pkg/cli/standupcli/commands/common"
@@ -58,20 +60,25 @@ func (ro *ReportOptions) printWeekStandUp() error {
 	fmt.Printf("Name: %s\n", ro.Context.GetName())
 	for i := 0; i < 7; i++ {
 		dt := datesOfWeek[i]
-		ro.printStandUp(dt, true)
+		ro.printStandup(dt)
 		fmt.Println("")
 
 		if dt.After(time.Now()) {
-			fmt.Printf("----week still in progress/exceeded today----\n")
+			pterm.Info.Println("week still in progress/exceeded today")
+			fmt.Println("")
 			break
 		}
 	}
 	return nil
 }
 
-func (ro *ReportOptions) printStandUp(dt time.Time, printName bool) error {
+func (ro *ReportOptions) printStandup(dt time.Time) error {
+	holidayMessage := fmt.Sprintf("Holiday on Date, skipping")
+	noStandupMessage := fmt.Sprintf("No Standup recorded, skipping")
 	stc := standup.NewStandUpConfig(dt)
 	e, err := stc.ConfigFileExists(ro.Context)
+	panel := pterm.DefaultBox.WithTitle(fmt.Sprintf("Standup Date %s", util.DateToString(dt)))
+
 	if err != nil {
 		return fmt.Errorf("unable to check standup config exists %w", err)
 	}
@@ -82,7 +89,6 @@ func (ro *ReportOptions) printStandUp(dt time.Time, printName bool) error {
 			return err
 		}
 		stup := stc.GetStandUp()
-		tz, _ := dt.Zone()
 		for _, h := range ro.Context.GetHolidays() {
 			if dt.Weekday().String() == h {
 				isHoliday = true
@@ -90,49 +96,104 @@ func (ro *ReportOptions) printStandUp(dt time.Time, printName bool) error {
 			}
 		}
 		if isHoliday || stup.IsHoliday {
-			printHolidayMessage(dt)
+			panel.Println(pterm.Info.Sprintfln(holidayMessage))
 			return nil
 		}
 		if len(stup.Sections) == 0 {
-			printNoStandupMessage(dt)
+			panel.Println(pterm.Info.Sprintfln(noStandupMessage))
 			return nil
 		}
-		fmt.Printf("Standup for Date %d %s %d %s %s: \n\n", dt.Day(), dt.Month(), dt.Year(), dt.Weekday(), tz)
-		if printName {
-			fmt.Printf("Name: %s\n", ro.Context.GetName())
-		}
-		for s, ts := range stup.Sections {
-			fmt.Printf("%s:\n", s)
-			desc := ro.Context.GetSectionDescription(s)
-			if desc != "" {
-				fmt.Printf("Description: %s\n", desc)
+		var sectionPanels = make(pterm.Panels, 0)
+		var panelRow = make([]pterm.Panel, 0)
+		for s, section := range stup.Sections {
+			if len(panelRow) == 0 {
+				panelRow = make([]pterm.Panel, 0)
 			}
-
-			for _, t := range ts {
-				ids := ""
-				if ro.wide {
-					ids = fmt.Sprintf("[%s] ", t.ID)
-				}
-				fmt.Printf("  - %s%s\n", ids, t.Description)
+			var bli []pterm.BulletListItem
+			for _, task := range section {
+				bli = append(bli, pterm.BulletListItem{
+					Level: 0,
+					Text:  task.Description,
+				})
 			}
-			fmt.Println("")
+			blstr, _ := pterm.DefaultBulletList.WithItems(bli).Srender()
+			blstr = strings.ReplaceAll(blstr, "%!(EXTRA <nil>)", "")
+			if strings.HasSuffix(blstr, "\n") {
+				blstr = strings.TrimRight(blstr, "\n")
+			}
+			descStr := ro.Context.GetSectionDescription(s)
+			desc := ""
+			if len(descStr) > 0 {
+				desc = pterm.PrefixPrinter{
+					Prefix: pterm.Prefix{
+						Text:  "Desc",
+						Style: pterm.Info.Prefix.Style,
+					},
+					Scope:            pterm.Info.Scope,
+					MessageStyle:     pterm.Info.MessageStyle,
+					Fatal:            pterm.Info.Fatal,
+					ShowLineNumber:   pterm.Info.ShowLineNumber,
+					LineNumberOffset: pterm.Info.LineNumberOffset,
+					Writer:           pterm.Info.Writer,
+					Debugger:         pterm.Info.Debugger,
+				}.Sprintfln(ro.Context.GetSectionDescription(s))
+			}
+			blstr = fmt.Sprintf("%s\n%s", desc, blstr)
+			panelRow = append(panelRow, pterm.Panel{Data: pterm.DefaultBox.WithTitle(s).Sprintf(blstr)})
+			if len(panelRow) == ro.Context.GetSectionsPerRow() {
+				sectionPanels = append(sectionPanels, panelRow)
+				panelRow = make([]pterm.Panel, 0)
+			}
 		}
+		if len(panelRow) != 0 {
+			sectionPanels = append(sectionPanels, panelRow)
+		}
+		panels, _ := pterm.DefaultPanel.WithPanels(sectionPanels).Srender()
+		panel.Println(panels)
 	} else {
-		printNoStandupMessage(dt)
+		panel.Println(pterm.Info.Sprintfln(noStandupMessage))
 	}
 	return nil
 }
 
 func (ro *ReportOptions) Run() error {
+	pterm.DefaultSection.Println("Standup information")
+	namePrinter := pterm.PrefixPrinter{
+		Prefix: pterm.Prefix{
+			Text:  "Name",
+			Style: pterm.Info.Prefix.Style,
+		},
+		Scope:            pterm.Info.Scope,
+		MessageStyle:     pterm.Info.MessageStyle,
+		Fatal:            pterm.Info.Fatal,
+		ShowLineNumber:   pterm.Info.ShowLineNumber,
+		LineNumberOffset: pterm.Info.LineNumberOffset,
+		Writer:           pterm.Info.Writer,
+		Debugger:         pterm.Info.Debugger,
+	}
+	namePrinter.Println(ro.Context.GetName())
+	standupTypePrinter := pterm.PrefixPrinter{
+		Prefix: pterm.Prefix{
+			Text:  "Type",
+			Style: pterm.Info.Prefix.Style,
+		},
+		Scope:            pterm.Info.Scope,
+		MessageStyle:     pterm.Info.MessageStyle,
+		Fatal:            pterm.Info.Fatal,
+		ShowLineNumber:   pterm.Info.ShowLineNumber,
+		LineNumberOffset: pterm.Info.LineNumberOffset,
+		Writer:           pterm.Info.Writer,
+		Debugger:         pterm.Info.Debugger,
+	}
 	if ro.week {
-		fmt.Printf("----Weekly Report----\n\n")
+		standupTypePrinter.Println("Weekly")
+		pterm.DefaultSection.Println("Reports")
 		errx := ro.printWeekStandUp()
-		fmt.Println("----end----")
 		return errx
 	} else {
-		fmt.Printf("----Day Report----\n\n")
-		errx := ro.printStandUp(ro.GetDate(), true)
-		fmt.Println("----end----")
+		standupTypePrinter.Println("Specific Day")
+		pterm.DefaultSection.Println("Report")
+		errx := ro.printStandup(ro.GetDate())
 		return errx
 	}
 }

@@ -49,25 +49,6 @@ func (c *Context) GetStandUpFileDir() (string, error) {
 	return sfd, nil
 }
 
-// SectionExists checks if specified section exists
-func (c *Context) SectionExists(sectioName string) bool {
-	for s, _ := range c.configuration.SectionNames {
-		if s == sectioName {
-			return true
-		}
-	}
-	return false
-}
-
-func (c *Context) GetSectionDescription(sectionName string) string {
-	for k, v := range c.configuration.SectionNames {
-		if k == sectionName {
-			return v
-		}
-	}
-	return ""
-}
-
 func (c *Context) GetStartOfWeekDay() (wkday time.Weekday, err error) {
 	var wkdaymap map[string]time.Weekday
 	wkdaymap = make(map[string]time.Weekday)
@@ -99,9 +80,9 @@ func (c *Context) SetHolidays(val []string) error {
 	return c.configuration.WriteConfig()
 }
 
-func (c *Context) GetSections() map[string]string {
-	var sn map[string]string
-	sn = c.configuration.SectionNames
+func (c *Context) GetSections() []*ConfigSection {
+	var sn []*ConfigSection
+	sn = c.configuration.Sections
 	return sn
 }
 
@@ -127,24 +108,82 @@ func (c *Context) SetName(name string) error {
 	return c.configuration.WriteConfig()
 }
 
-func (c *Context) UpdateSectionDescription(name string, description string) error {
-	c.configuration.SectionNames[name] = description
+// SectionExists checks if specified section exists
+func (c *Context) SectionExists(sectionName string) *ConfigSection {
+	for _, s := range c.configuration.Sections {
+		if s.Name == sectionName {
+			return s
+		}
+	}
+	return nil
+}
+
+func (c *Context) ExistsOrCreate(name string) error {
+	if c.SectionExists(name) == nil {
+		c.configuration.Sections = append(c.configuration.Sections, &ConfigSection{Name: name})
+	}
 	return c.configuration.WriteConfig()
 }
 
-func (c *Context) DeleteSection(name string) error {
-	if c.SectionExists(name) {
-		if len(c.configuration.SectionNames) > 1 {
-			delete(c.configuration.SectionNames, name)
-			if c.configuration.DefaultSection == name {
-				for k, _ := range c.configuration.SectionNames {
-					c.configuration.DefaultSection = k
-					break
-				}
-			}
-		} else {
-			return fmt.Errorf("cannot delete last section in list")
+func (c *Context) UpdateSectionName(providedName, name string) error {
+	err := c.ExistsOrCreate(providedName)
+	if err != nil {
+		return err
+	}
+	c.SectionExists(providedName).Name = name
+	return c.configuration.WriteConfig()
+}
+
+func (c *Context) UpdateSectionShortName(providedName, shortName string) error {
+	err := c.ExistsOrCreate(providedName)
+	if err != nil {
+		return err
+	}
+	c.SectionExists(providedName).Short = shortName
+	return c.configuration.WriteConfig()
+}
+
+func (c *Context) UpdateSectionDescription(providedName string, description string) error {
+	err := c.ExistsOrCreate(providedName)
+	if err != nil {
+		return err
+	}
+	c.SectionExists(providedName).Description = description
+	return c.configuration.WriteConfig()
+}
+
+func (c *Context) GetSectionDescription(name string) string {
+	s := c.SectionExists(name)
+	if s != nil {
+		return s.Description
+	}
+	return ""
+}
+
+func (c *Context) GetSectionNameByShortName(shortName string) string {
+	for _, s := range c.configuration.Sections {
+		if s.Short == shortName {
+			return s.Name
 		}
 	}
+	return ""
+}
+
+func (c *Context) DeleteSection(name string) error {
+	for i, s := range c.configuration.Sections {
+		if s.Name == name {
+			c.configuration.Sections = append(c.configuration.Sections[:i], c.configuration.Sections[i+1:]...)
+			break
+		}
+	}
+	return c.configuration.WriteConfig()
+}
+
+func (c *Context) GetSectionsPerRow() int {
+	return c.configuration.SectionsPerRow
+}
+
+func (c *Context) SetSectionsPerRow(val int) error {
+	c.configuration.SectionsPerRow = val
 	return c.configuration.WriteConfig()
 }

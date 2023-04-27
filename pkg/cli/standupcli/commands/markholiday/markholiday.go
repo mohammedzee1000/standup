@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/mohammedzee1000/standup/pkg/cli/standupcli/commands/common"
 	"github.com/mohammedzee1000/standup/pkg/standup/standup"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -42,12 +43,15 @@ func (mho *MarkHolidayOptions) Run() error {
 		return err
 	}
 	stc.GetStandUp().IsHoliday = mho.isHoliday
-	fmt.Print("successfully marked date as ")
-	if mho.isHoliday {
-		fmt.Println("a holiday")
-	} else {
-		fmt.Println("not a holiday")
+	err = stc.ToFile(mho.Context)
+	if err != nil {
+		return err
 	}
+	markStr := "successfully marked date as "
+	if !mho.isHoliday {
+		markStr = fmt.Sprintf("%s not ", markStr)
+	}
+	pterm.Success.Printfln("%sa holiday", markStr)
 	return nil
 }
 

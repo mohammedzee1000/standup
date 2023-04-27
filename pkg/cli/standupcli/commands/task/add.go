@@ -2,6 +2,7 @@ package task
 
 import (
 	"fmt"
+	"github.com/pterm/pterm"
 
 	"github.com/mohammedzee1000/standup/pkg/cli/standupcli/commands/common"
 	"github.com/mohammedzee1000/standup/pkg/standup/standup"
@@ -31,6 +32,9 @@ func (tao *TaskAddOptions) Complete(name string, cmd *cobra.Command, args []stri
 	if tao.section == "" {
 		tao.section = tao.Context.GetDefaultSection()
 	}
+	if sn := tao.Context.GetSectionNameByShortName(tao.section); sn != "" {
+		tao.section = sn
+	}
 	return tao.CompleteDate()
 }
 
@@ -58,7 +62,7 @@ func (tao *TaskAddOptions) Run() error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Successfully added task with id %s to standup\n", t.ID)
+	pterm.Success.Printfln("Added task with id %s to standup\n", t.ID)
 	return nil
 }
 

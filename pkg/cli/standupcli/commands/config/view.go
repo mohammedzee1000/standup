@@ -1,12 +1,10 @@
 package config
 
 import (
-	"fmt"
-	"os"
-	"text/tabwriter"
-
 	"github.com/mohammedzee1000/standup/pkg/cli/standupcli/commands/common"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
+	"strings"
 )
 
 const RecommendedCommandNameGet = "view"
@@ -36,26 +34,39 @@ func (goo *ViewOptions) Run() error {
 		return err
 	}
 	holi := goo.Context.GetHolidays()
-	sec := goo.Context.GetSections()
+	secs := goo.Context.GetSections()
 	dsec := goo.Context.GetDefaultSection()
 	nm := goo.Context.GetName()
+	spp := goo.Context.GetSectionsPerRow()
 
-	//out
-	w := tabwriter.NewWriter(os.Stdout, 1, 4, 2, ' ', tabwriter.TabIndent)
+	var sectionPanels = make(pterm.Panels, 0)
+	var panelRow = make([]pterm.Panel, 0)
+	var panels string
 
-	fmt.Fprintln(w, "Configuration Parameters:\n ")
-	fmt.Fprintln(w, fmt.Sprintf("Name: %s", nm))
-	fmt.Fprintln(w, "Sections:")
-	for sn, sval := range sec {
-		fmt.Fprintf(w, "\t%s: %s\n", sn, sval)
+	pterm.DefaultSection.Printfln("Standup Configuration")
+
+	panelRow = append(panelRow, pterm.Panel{Data: pterm.DefaultBox.WithTitle("Name").Sprintf(nm)})
+	panelRow = append(panelRow, pterm.Panel{Data: pterm.DefaultBox.WithTitle("Default Section").Sprintf(dsec)})
+	panelRow = append(panelRow, pterm.Panel{Data: pterm.DefaultBox.WithTitle("Sections Per Row").Sprintf("%d", spp)})
+	sectionPanels = append(sectionPanels, panelRow)
+
+	panelRow = make([]pterm.Panel, 0)
+	panelRow = append(panelRow, pterm.Panel{Data: pterm.DefaultBox.WithTitle("Start of Week Day").Sprintf(swd.String())})
+	panelRow = append(panelRow, pterm.Panel{Data: pterm.DefaultBox.WithTitle("Holidays").Sprintf(strings.Join(holi, ","))})
+	sectionPanels = append(sectionPanels, panelRow)
+
+	panels, _ = pterm.DefaultPanel.WithPanels(sectionPanels).Srender()
+	pterm.DefaultBox.WithTitle("General Configuration").Println(panels)
+
+	if len(secs) > 0 {
+		var sectionTable = make(pterm.TableData, 0)
+		sectionTable = append(sectionTable, []string{"Full Section Name", "Short", "Description"})
+		for _, cs := range secs {
+			sectionTable = append(sectionTable, []string{cs.Name, cs.Short, cs.Description})
+		}
+		ts, _ := pterm.DefaultTable.WithHasHeader().WithBoxed().WithData(sectionTable).Srender()
+		pterm.DefaultBox.WithTitle("Standup Sections").Println(ts)
 	}
-	fmt.Fprintf(w, "Default Section: %s\n", dsec)
-	fmt.Fprintf(w, "Start of weekday:\t%s\n", swd.String())
-	fmt.Fprintln(w, "Holidays:")
-	for _, val := range holi {
-		fmt.Fprintf(w, "\t-%s\n", val)
-	}
-	w.Flush()
 	return nil
 }
 

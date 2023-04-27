@@ -1,11 +1,9 @@
 package common
 
 import (
-	"fmt"
-	"os"
-	"strings"
-
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
+	"os"
 )
 
 type Runnable interface {
@@ -17,9 +15,9 @@ type Runnable interface {
 func logErrorAndExit(err error, context string, a ...interface{}) {
 	if err != nil {
 		if context == "" {
-			fmt.Printf("%s\n", err)
+			pterm.Error.Printfln("%s\n", err)
 		} else {
-			fmt.Printf("%s %s", strings.Title(context), err)
+			pterm.Error.Printfln("%s %s", context, err)
 		}
 		os.Exit(1)
 	}
