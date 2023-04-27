@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"github.com/mohammedzee1000/standup/pkg/cli/standupcli/commands/common"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -65,6 +66,11 @@ func (goo *ViewOptions) Run() error {
 			sectionTable = append(sectionTable, []string{cs.Name, cs.Short, cs.Description})
 		}
 		ts, _ := pterm.DefaultTable.WithHasHeader().WithBoxed().WithData(sectionTable).Srender()
+		ts = fmt.Sprintf(
+			"%s%s",
+			pterm.Warning.Sprintfln("First name/short name will be used in case of repetition"),
+			ts,
+		)
 		pterm.DefaultBox.WithTitle("Standup Sections").Println(ts)
 	}
 	return nil
