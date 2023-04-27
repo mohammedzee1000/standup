@@ -83,7 +83,7 @@ func ReadConfig() (*Config, error) {
 		})
 		c.StartOfWeekDay = time.Monday.String()
 		c.Holidays = []string{time.Saturday.String(), time.Sunday.String()}
-		c.SectionsPerRow = 2
+		c.SectionsPerRow = 1
 		c.KeepOldUntil = &ConfigDuration{
 			Days:   0,
 			Weeks:  0,
