@@ -6,6 +6,13 @@ import (
 	"time"
 )
 
+const (
+	secondsInDayFactor   = 86400
+	secondsIneWekFactor  = 604800
+	secondsInMonthFactor = 2600640
+	secondsInYearFactor  = 31207680
+)
+
 func StringToWeekDay(value string) (wkday time.Weekday, err error) {
 	var wkdaymap map[string]time.Weekday
 	wkdaymap = make(map[string]time.Weekday)
@@ -76,4 +83,20 @@ func RoundTime(input float64) int {
 	i, _ := math.Modf(result)
 
 	return int(i)
+}
+
+func DaysFromSeconds(s int) int {
+	return RoundTime(float64(s / secondsInDayFactor))
+}
+
+func WeeksFromSeconds(s int) int {
+	return RoundTime(float64(s / secondsIneWekFactor))
+}
+
+func MonthsFromSeconds(s int) int {
+	return RoundTime(float64(s / secondsInMonthFactor))
+}
+
+func YearsFromSeconds(s int) int {
+	return RoundTime(float64(s / secondsInYearFactor))
 }
