@@ -8,6 +8,11 @@ import (
 	"github.com/pkg/errors"
 )
 
+const (
+	ViewInPanels = iota + 1
+	ViewPlain
+)
+
 type ConfigSection struct {
 	Name        string `json:"Name"`
 	Short       string `json:"Short"`
@@ -20,6 +25,11 @@ type ConfigDuration struct {
 	Months int `json:"Months"`
 }
 
+type StandupView struct {
+	ConfigView uint `json:"ConfigView"`
+	ReportView uint `json:"ReportView"`
+}
+
 // Config repersents the app config
 type Config struct {
 	Name           string           `json:"Name"`
@@ -29,6 +39,7 @@ type Config struct {
 	Holidays       []string         `json:"Holidays"`
 	SectionsPerRow int              `json:"SectionsPerRow"`
 	KeepOldUntil   *ConfigDuration  `json:"KeepOldUntil"`
+	StandupView    *StandupView     `json:"StandupView"`
 }
 
 // new creates a new Config struct
@@ -89,6 +100,11 @@ func ReadConfig() (*Config, error) {
 			Weeks:  0,
 			Months: 1,
 		}
+		c.StandupView = &StandupView{
+			ConfigView: ViewInPanels,
+			ReportView: ViewInPanels,
+		}
+
 		err = c.WriteConfig()
 		if err != nil {
 			return c, err
