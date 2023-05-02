@@ -60,14 +60,13 @@ func (ro *ReportOptions) printWeekStandUp() error {
 	fmt.Printf("Name: %s\n", ro.Context.GetName())
 	for i := 0; i < 7; i++ {
 		dt := datesOfWeek[i]
-		ro.printStandup(dt)
-		fmt.Println("")
-
 		if dt.After(time.Now()) {
 			pterm.Info.Println("week still in progress/exceeded today")
 			fmt.Println("")
 			break
 		}
+		ro.printStandup(dt)
+		fmt.Println("")
 	}
 	return nil
 }
