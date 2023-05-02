@@ -1,16 +1,14 @@
 package config
 
 import (
-	"fmt"
 	"github.com/mohammedzee1000/standup/pkg/cli/standupcli/commands/common"
-	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
-	"strings"
 )
 
 const RecommendedCommandNameGet = "view"
 
 type ViewOptions struct {
+	viewer Viewer
 	*common.CommonOptions
 }
 
@@ -21,7 +19,12 @@ func newViewOptions() *ViewOptions {
 }
 
 func (goo *ViewOptions) Complete(name string, cmd *cobra.Command, args []string) error {
-	return goo.InitContext()
+	err := goo.InitContext()
+	if err != nil {
+		return err
+	}
+	goo.viewer = &PanelViewer{}
+	return nil
 }
 
 func (goo *ViewOptions) Validate() error {
@@ -40,39 +43,10 @@ func (goo *ViewOptions) Run() error {
 	nm := goo.Context.GetName()
 	spp := goo.Context.GetSectionsPerRow()
 
-	var sectionPanels = make(pterm.Panels, 0)
-	var panelRow = make([]pterm.Panel, 0)
-	var panels string
-
-	pterm.DefaultSection.Printfln("Standup Configuration")
-
-	panelRow = append(panelRow, pterm.Panel{Data: pterm.DefaultBox.WithTitle("Name").Sprintf(nm)})
-	panelRow = append(panelRow, pterm.Panel{Data: pterm.DefaultBox.WithTitle("Default Section").Sprintf(dsec)})
-	panelRow = append(panelRow, pterm.Panel{Data: pterm.DefaultBox.WithTitle("Sections Per Row").Sprintf("%d", spp)})
-	sectionPanels = append(sectionPanels, panelRow)
-
-	panelRow = make([]pterm.Panel, 0)
-	panelRow = append(panelRow, pterm.Panel{Data: pterm.DefaultBox.WithTitle("Start of Week Day").Sprintf(swd.String())})
-	panelRow = append(panelRow, pterm.Panel{Data: pterm.DefaultBox.WithTitle("Holidays").Sprintf(strings.Join(holi, ","))})
-	sectionPanels = append(sectionPanels, panelRow)
-
-	panels, _ = pterm.DefaultPanel.WithPanels(sectionPanels).Srender()
-	pterm.DefaultBox.WithTitle("General Configuration").Println(panels)
-
-	if len(secs) > 0 {
-		var sectionTable = make(pterm.TableData, 0)
-		sectionTable = append(sectionTable, []string{"Full Section Name", "Short", "Description"})
-		for _, cs := range secs {
-			sectionTable = append(sectionTable, []string{cs.Name, cs.Short, cs.Description})
-		}
-		ts, _ := pterm.DefaultTable.WithHasHeader().WithBoxed().WithData(sectionTable).Srender()
-		ts = fmt.Sprintf(
-			"%s%s",
-			pterm.Warning.Sprintfln("First name/short name will be used in case of repetition"),
-			ts,
-		)
-		pterm.DefaultBox.WithTitle("Standup Sections").Println(ts)
+	if goo.viewer != nil {
+		return goo.viewer.View(swd, holi, secs, dsec, nm, spp)
 	}
+
 	return nil
 }
 
