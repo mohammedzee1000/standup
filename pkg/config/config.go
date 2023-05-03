@@ -10,8 +10,10 @@ import (
 
 const (
 	ViewInPanels = iota + 1
-	ViewPlain
+	ViewSimple
 )
+
+const ViewUnknown = 999999
 
 type ConfigSection struct {
 	Name        string `json:"Name"`
@@ -30,7 +32,7 @@ type StandupView struct {
 	ReportView uint `json:"ReportView"`
 }
 
-// Config repersents the app config
+// Config represents the app config
 type Config struct {
 	Name           string           `json:"Name"`
 	Sections       []*ConfigSection `json:"Sections,omitempty"`

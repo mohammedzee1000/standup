@@ -1,7 +1,9 @@
 package config
 
 import (
+	"fmt"
 	"github.com/mohammedzee1000/standup/pkg/cli/standupcli/commands/common"
+	"github.com/mohammedzee1000/standup/pkg/config"
 	"github.com/spf13/cobra"
 )
 
@@ -23,7 +25,10 @@ func (goo *ViewOptions) Complete(name string, cmd *cobra.Command, args []string)
 	if err != nil {
 		return err
 	}
-	goo.viewer = &PanelViewer{}
+	vm := goo.Context.GetConfigViewMode()
+	if vm == config.ViewInPanels {
+		goo.viewer = &PanelViewer{}
+	}
 	return nil
 }
 
@@ -42,12 +47,13 @@ func (goo *ViewOptions) Run() error {
 	dsec := goo.Context.GetDefaultSection()
 	nm := goo.Context.GetName()
 	spp := goo.Context.GetSectionsPerRow()
+	cvm := goo.Context.GetConfigViewMode()
+	rvm := goo.Context.GetReportViewMode()
 
 	if goo.viewer != nil {
-		return goo.viewer.View(swd, holi, secs, dsec, nm, spp)
+		return goo.viewer.View(swd, holi, secs, dsec, nm, spp, cvm, rvm)
 	}
-
-	return nil
+	return fmt.Errorf("could not view the config details")
 }
 
 func NewCmdConfigView(name, fullname string) *cobra.Command {

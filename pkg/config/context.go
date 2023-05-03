@@ -187,3 +187,11 @@ func (c *Context) SetSectionsPerRow(val int) error {
 	c.configuration.SectionsPerRow = val
 	return c.configuration.WriteConfig()
 }
+
+func (c *Context) GetConfigViewMode() uint {
+	return c.configuration.StandupView.ConfigView
+}
+
+func (c *Context) GetReportViewMode() uint {
+	return c.configuration.StandupView.ReportView
+}
