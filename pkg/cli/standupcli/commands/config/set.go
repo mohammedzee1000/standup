@@ -6,10 +6,10 @@ import (
 	"github.com/mohammedzee1000/standup/pkg/util"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
-	"time"
 )
 
 const RecommendedCommandNameSet = "set"
+const EmptySectionsPerRow = -999
 
 type SetOptions struct {
 	*common.CommonOptions
@@ -31,8 +31,8 @@ func (so *SetOptions) Complete(name string, cmd *cobra.Command, args []string) e
 	if err != nil {
 		return err
 	}
-	if so.sectionsPerRow <= 0 {
-		so.sectionsPerRow = 2
+	if so.sectionsPerRow != EmptySectionsPerRow && so.sectionsPerRow <= 0 {
+		so.sectionsPerRow = 1
 	}
 	return nil
 }
@@ -83,9 +83,11 @@ func (so *SetOptions) Run() (err error) {
 			return err
 		}
 	}
-	err = so.Context.SetSectionsPerRow(so.sectionsPerRow)
-	if err != nil {
-		return err
+	if so.sectionsPerRow != EmptySectionsPerRow {
+		err = so.Context.SetSectionsPerRow(so.sectionsPerRow)
+		if err != nil {
+			return err
+		}
 	}
 	pterm.Success.Println("updated configuration")
 	return nil
@@ -105,7 +107,7 @@ func NewCmdConfigSet(name, fullname string) *cobra.Command {
 	configSetCmd.Flags().StringVarP(&o.defaultSection, "defaultsection", "d", "", "use to set default section")
 	configSetCmd.Flags().StringVarP(&o.startOfWeek, "startofweekday", "w", "", "use to update start of week")
 	configSetCmd.Flags().StringVarP(&o.name, "name", "n", "", "name of the owner of this standup")
-	configSetCmd.Flags().StringArrayVarP(&o.holidays, "holidays", "l", []string{time.Saturday.String(), time.Sunday.String()}, "List of regular weekly holidays, defaults to Saturday and Sunday")
-	configSetCmd.Flags().IntVarP(&o.sectionsPerRow, "sectionsperrow", "s", 2, "No of sections to display per row in report")
+	configSetCmd.Flags().StringArrayVarP(&o.holidays, "holidays", "l", []string{}, "List of regular weekly holidays")
+	configSetCmd.Flags().IntVarP(&o.sectionsPerRow, "sectionsperrow", "s", EmptySectionsPerRow, "No of sections to display per row in report")
 	return configSetCmd
 }
