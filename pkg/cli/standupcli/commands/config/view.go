@@ -28,6 +28,8 @@ func (goo *ViewOptions) Complete(name string, cmd *cobra.Command, args []string)
 	vm := goo.Context.GetConfigViewMode()
 	if vm == config.ViewInPanels {
 		goo.viewer = &PanelViewer{}
+	} else if vm == config.ViewSimple {
+		goo.viewer = &SimpleViewer{}
 	}
 	return nil
 }

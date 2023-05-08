@@ -52,6 +52,35 @@ func StringToMonth(value string) (mnt time.Month, err error) {
 	return mnt, nil
 }
 
+func MonthToInt(value time.Month) (int, error) {
+	var mntmap map[time.Month]int
+	mntmap = make(map[time.Month]int)
+	mntmap[time.January] = 1
+	mntmap[time.February] = 2
+	mntmap[time.March] = 3
+	mntmap[time.April] = 4
+	mntmap[time.May] = 5
+	mntmap[time.June] = 6
+	mntmap[time.July] = 7
+	mntmap[time.August] = 8
+	mntmap[time.September] = 9
+	mntmap[time.October] = 10
+	mntmap[time.November] = 11
+	mntmap[time.December] = 12
+	mnt, ok := mntmap[value]
+	if !ok {
+		return mnt, fmt.Errorf("invalid month specifed %v", value)
+	}
+	return mnt, nil
+}
+
+func DateNumberToString(value int) string {
+	if value < 10 {
+		return fmt.Sprintf("0%d", value)
+	}
+	return fmt.Sprintf("%d", value)
+}
+
 func DateToString(dt time.Time) string {
 	tz, _ := dt.Zone()
 	return fmt.Sprintf("%d %s %d %s %s", dt.Day(), dt.Month().String(), dt.Year(), dt.Weekday().String(), tz)

@@ -2,6 +2,7 @@ package report
 
 import (
 	"fmt"
+	"github.com/mohammedzee1000/standup/pkg/cli/ptermutils"
 	"github.com/mohammedzee1000/standup/pkg/util"
 	"github.com/pterm/pterm"
 	"strings"
@@ -57,7 +58,6 @@ func (ro *ReportOptions) printWeekStandUp() error {
 		return err
 	}
 	datesOfWeek := util.GetDatesofWeek(firstDayWeek, ro.GetDate())
-	fmt.Printf("Name: %s\n", ro.Context.GetName())
 	for i := 0; i < 7; i++ {
 		dt := datesOfWeek[i]
 		if dt.After(time.Now()) {
@@ -157,33 +157,9 @@ func (ro *ReportOptions) printStandup(dt time.Time) error {
 
 func (ro *ReportOptions) Run() error {
 	pterm.DefaultSection.Println("Standup information")
-	namePrinter := pterm.PrefixPrinter{
-		Prefix: pterm.Prefix{
-			Text:  "Name",
-			Style: pterm.Info.Prefix.Style,
-		},
-		Scope:            pterm.Info.Scope,
-		MessageStyle:     pterm.Info.MessageStyle,
-		Fatal:            pterm.Info.Fatal,
-		ShowLineNumber:   pterm.Info.ShowLineNumber,
-		LineNumberOffset: pterm.Info.LineNumberOffset,
-		Writer:           pterm.Info.Writer,
-		Debugger:         pterm.Info.Debugger,
-	}
+	namePrinter := ptermutils.NewCustumInfoPrinter("Name", 4)
+	standupTypePrinter := ptermutils.NewCustumInfoPrinter("Type", 4)
 	namePrinter.Println(ro.Context.GetName())
-	standupTypePrinter := pterm.PrefixPrinter{
-		Prefix: pterm.Prefix{
-			Text:  "Type",
-			Style: pterm.Info.Prefix.Style,
-		},
-		Scope:            pterm.Info.Scope,
-		MessageStyle:     pterm.Info.MessageStyle,
-		Fatal:            pterm.Info.Fatal,
-		ShowLineNumber:   pterm.Info.ShowLineNumber,
-		LineNumberOffset: pterm.Info.LineNumberOffset,
-		Writer:           pterm.Info.Writer,
-		Debugger:         pterm.Info.Debugger,
-	}
 	if ro.week {
 		standupTypePrinter.Println("Weekly")
 		pterm.DefaultSection.Println("Reports")
