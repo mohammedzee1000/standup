@@ -78,11 +78,8 @@ func (pv *SimpleViewer) View(swd time.Weekday, holi []string, secs []*config.Con
 	if len(secs) > 0 {
 		pterm.Warning.Printfln("First name/short name will be used in case of repetition")
 		for _, cs := range secs {
-			pterm.DefaultSection.WithLevel(3).Printfln(cs.Name)
-			snm := ptermutils.NewCustumInfoPrinter("Short Name", prefixSize)
-			snm.Printfln(cs.Short)
-			desc := ptermutils.NewCustumInfoPrinter("Description", prefixSize)
-			desc.Println(cs.Description)
+			pterm.DefaultSection.WithLevel(3).Printfln("%s (SHORT: %s)", cs.Name, cs.Short)
+			pterm.DefaultParagraph.Println(cs.Description)
 		}
 		fmt.Println()
 	}
