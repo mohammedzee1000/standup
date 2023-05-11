@@ -1,6 +1,9 @@
 package ptermutils
 
-import "github.com/pterm/pterm"
+import (
+	"github.com/mohammedzee1000/standup/pkg/config"
+	"github.com/pterm/pterm"
+)
 
 func NewCustumInfoPrinter(prefix string, prefixFixedLength int) pterm.PrefixPrinter {
 	ptext := prefix
@@ -23,4 +26,11 @@ func NewCustumInfoPrinter(prefix string, prefixFixedLength int) pterm.PrefixPrin
 		Writer:           pterm.Info.Writer,
 		Debugger:         false,
 	}
+}
+
+func GetViewModeText(viewMode uint) string {
+	if config.IsValidViewMode(viewMode) {
+		return pterm.DefaultBasicText.Sprintf(config.ViewModeToString(viewMode))
+	}
+	return pterm.Error.Sprintf("invalid view mode")
 }

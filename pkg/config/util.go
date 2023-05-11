@@ -8,3 +8,7 @@ func ViewModeToString(mode uint) string {
 	}
 	return "Unknown or Unsupported"
 }
+
+func IsValidViewMode(mode uint) bool {
+	return mode == ViewInPanels || mode == ViewSimple
+}

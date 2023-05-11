@@ -33,8 +33,9 @@ func (pv *PanelViewer) View(swd time.Weekday, holi []string, secs []*config.Conf
 	sectionPanels = append(sectionPanels, panelRow)
 
 	panelRow = make([]pterm.Panel, 0)
-	panelRow = append(panelRow, pterm.Panel{Data: pterm.DefaultBox.WithTitle("Config View Mode").Sprintf(config.ViewModeToString(configViewMode))})
-	panelRow = append(panelRow, pterm.Panel{Data: pterm.DefaultBox.WithTitle("Report View Mode").Sprintf(config.ViewModeToString(reportViewMode))})
+	//var ViewModeData string
+	panelRow = append(panelRow, pterm.Panel{Data: pterm.DefaultBox.WithTitle("Config View Mode").Sprintf(ptermutils.GetViewModeText(configViewMode))})
+	panelRow = append(panelRow, pterm.Panel{Data: pterm.DefaultBox.WithTitle("Report View Mode").Sprintf(ptermutils.GetViewModeText(reportViewMode))})
 	sectionPanels = append(sectionPanels, panelRow)
 
 	panels, _ = pterm.DefaultPanel.WithPanels(sectionPanels).Srender()

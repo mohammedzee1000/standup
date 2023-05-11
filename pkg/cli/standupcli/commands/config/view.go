@@ -55,7 +55,7 @@ func (goo *ViewOptions) Run() error {
 	if goo.viewer != nil {
 		return goo.viewer.View(swd, holi, secs, dsec, nm, spp, cvm, rvm)
 	}
-	return fmt.Errorf("could not view the config details")
+	return fmt.Errorf("could not view the config details, invalid viewer")
 }
 
 func NewCmdConfigView(name, fullname string) *cobra.Command {
