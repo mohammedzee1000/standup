@@ -59,37 +59,50 @@ func (so *SetOptions) Validate() error {
 }
 
 func (so *SetOptions) Run() (err error) {
+	var updatedField = false
 	if so.defaultSection != "" {
 		err = so.Context.SetDefaultSection(so.defaultSection)
 		if err != nil {
 			return err
 		}
+		updatedField = true
+		pterm.Success.Println("updated default section")
 	}
 	if so.startOfWeek != "" {
 		err = so.Context.SetStartOfWeekDay(so.startOfWeek)
 		if err != nil {
 			return err
 		}
+		updatedField = true
+		pterm.Success.Println("updated start of week day")
 	}
 	if len(so.holidays) != 0 {
 		err = so.Context.SetHolidays(so.holidays)
 		if err != nil {
 			return err
 		}
+		updatedField = true
+		pterm.Success.Println("updated weekly holiday list")
 	}
 	if so.name != "" {
 		err = so.Context.SetName(so.name)
 		if err != nil {
 			return err
 		}
+		updatedField = true
+		pterm.Success.Println("updated name")
 	}
 	if so.sectionsPerRow != EmptySectionsPerRow {
 		err = so.Context.SetSectionsPerRow(so.sectionsPerRow)
 		if err != nil {
 			return err
 		}
+		updatedField = true
+		pterm.Success.Println("updated sections per row")
 	}
-	pterm.Success.Println("updated configuration")
+	if !updatedField {
+		return fmt.Errorf("nothing was provided to update in the config")
+	}
 	return nil
 }
 
