@@ -70,8 +70,8 @@ func (pv *SimpleViewer) View(swd time.Weekday, holi []string, secs []*config.Con
 	sppText := ptermutils.NewCustumInfoPrinter("Sections Per Row", prefixSize).Sprintfln("%d", spp)
 	swdText := ptermutils.NewCustumInfoPrinter("Start of Week Day", prefixSize).Sprintfln("%s", swd.String())
 	holiText := ptermutils.NewCustumInfoPrinter("Holidays Every Week", prefixSize).Sprintfln("%s", strings.Join(holi, ","))
-	configViewModeText := ptermutils.NewCustumInfoPrinter("Config View Mode", prefixSize).Sprintfln(config.ViewModeToString(configViewMode))
-	reportViewModeText := ptermutils.NewCustumInfoPrinter("Report View Mode", prefixSize).Sprintfln(config.ViewModeToString(reportViewMode))
+	configViewModeText := ptermutils.NewCustumInfoPrinter("Config View Mode", prefixSize).Sprintfln(ptermutils.GetViewModeText(configViewMode))
+	reportViewModeText := ptermutils.NewCustumInfoPrinter("Report View Mode", prefixSize).Sprintfln(ptermutils.GetViewModeText(reportViewMode))
 	pterm.DefaultPanel.WithPanels(pterm.Panels{{{Data: pterm.DefaultBasicText.Sprintf("%s%s%s%s%s%s%s", nmText, dsecText, sppText, swdText, holiText, configViewModeText, reportViewModeText)}}}).Render()
 
 	pterm.DefaultSection.WithLevel(2).Printfln("Standup Sections")
