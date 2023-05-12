@@ -123,19 +123,7 @@ func (ro *ReportOptions) printStandup(dt time.Time) error {
 			descStr := ro.Context.GetSectionDescription(s)
 			desc := ""
 			if len(descStr) > 0 {
-				desc = pterm.PrefixPrinter{
-					Prefix: pterm.Prefix{
-						Text:  "Desc",
-						Style: pterm.Info.Prefix.Style,
-					},
-					Scope:            pterm.Info.Scope,
-					MessageStyle:     pterm.Info.MessageStyle,
-					Fatal:            pterm.Info.Fatal,
-					ShowLineNumber:   pterm.Info.ShowLineNumber,
-					LineNumberOffset: pterm.Info.LineNumberOffset,
-					Writer:           pterm.Info.Writer,
-					Debugger:         pterm.Info.Debugger,
-				}.Sprintfln(ro.Context.GetSectionDescription(s))
+				desc = ptermutils.NewCustumInfoPrinter("Desc", 4).Sprintfln(ro.Context.GetSectionDescription(s))
 			}
 			blstr = fmt.Sprintf("%s\n%s", desc, blstr)
 			panelRow = append(panelRow, pterm.Panel{Data: pterm.DefaultBox.WithTitle(s).Sprintf(blstr)})
